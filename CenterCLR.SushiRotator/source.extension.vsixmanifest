@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="SushiRotator" Version="1.0.5" Language="en-US" Publisher="kekyo" />
+    <Identity Id="SushiRotator" Version="1.0.6" Language="en-US" Publisher="kekyo" />
     <DisplayName>SushiRotator</DisplayName>
     <Description xml:space="preserve">SushiRotator - A reason for aborted working</Description>
     <MoreInfo>https://github.com/kekyo/CenterCLR.SushiRotator</MoreInfo>
-    <License>..\LICENSE.txt</License>
+    <License>LICENSE.txt</License>
     <Icon>Icon.png</Icon>
     <PreviewImage>PreviewImage.png</PreviewImage>
     <Tags>sushi,abort,work,funny,touch,bar,joke</Tags>
