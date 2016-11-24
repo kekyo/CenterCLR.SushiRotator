@@ -107,7 +107,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CenterCLR.SushiRotator.png">
+    <Content Include="Icon.png" />
+    <Content Include="PreviewImage.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
