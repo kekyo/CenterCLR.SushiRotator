@@ -6,8 +6,8 @@
     <Description xml:space="preserve">SushiRotator - A reason for aborted working</Description>
     <MoreInfo>https://github.com/kekyo/CenterCLR.SushiRotator</MoreInfo>
     <License>..\LICENSE.txt</License>
-    <GettingStartedGuide>A reason for aborted working</GettingStartedGuide>
     <Icon>Microsoft.png</Icon>
+    <PreviewImage>CenterCLR.SushiRotator.png</PreviewImage>
     <Tags>sushi abort work funny touch bar joke</Tags>
   </Metadata>
   <Installation>
