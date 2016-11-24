@@ -7,7 +7,7 @@
 ![CenterCLR.SushiRotator](https://raw.githubusercontent.com/kekyo/CenterCLR.SushiRotator/master/CenterCLR.SushiRotator.gif)
 
 ## How to use
-* [Install Visual Studio 2015 extension from marketplace.](https://marketplace.visualstudio.com/items?itemName=kekyo.SushiRotator)
+* [Install Visual Studio 2015 extension from gallery.](https://marketplace.visualstudio.com/items?itemName=kekyo.SushiRotator)
 * [Or just download.](https://raw.githubusercontent.com/kekyo/CenterCLR.SushiRotator/master/CenterCLR.SushiRotator.vsix)
 * All done!
 
