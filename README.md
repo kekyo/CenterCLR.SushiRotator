@@ -1,5 +1,5 @@
 # SushiRotator
-![Sushi (Microsoft)](https://raw.githubusercontent.com/kekyo/CenterCLR.SushiRotator/master/Images/Microsoft.png)
+![Sushi (Microsoft)](https://raw.githubusercontent.com/kekyo/CenterCLR.SushiRotator/master/CenterCLR.SushiRotator/Images/Microsoft.png)
 
 ## What is this?
 * A reason for aborted working :)
