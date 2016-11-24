@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="SushiRotator.480a4d24-493c-469f-8edc-49162a5b5ef1" Version="1.0" Language="en-US" Publisher="Kouji Matsui" />
+    <Identity Id="SushiRotator.480a4d24-493c-469f-8edc-49162a5b5ef1" Version="1.0" Language="en-US" Publisher="kekyo" />
     <DisplayName>SushiRotator</DisplayName>
     <Description xml:space="preserve">SushiRotator - A reason for aborted working</Description>
     <MoreInfo>https://github.com/kekyo/CenterCLR.SushiRotator</MoreInfo>
     <License>..\LICENSE.txt</License>
-    <GettingStartedGuide>A reason for aborted working</GettingStartedGuide>
     <Icon>Microsoft.png</Icon>
+    <PreviewImage>CenterCLR.SushiRotator.png</PreviewImage>
     <Tags>sushi abort work funny touch bar joke</Tags>
   </Metadata>
   <Installation>
