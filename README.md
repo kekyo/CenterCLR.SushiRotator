@@ -16,35 +16,36 @@
 * More funny gimmicks...
 
 ## Funny "Touch Bar" trivias and why born "SusuiRotator?"
-1. Apple open new MacBook Pro (2016) and include "Touch Bar" device.
+
+### 1. Apple open new MacBook Pro (2016) and include "Touch Bar" device.
 
 ![New MacBook Pro (2016) Touch Bar](https://raw.githubusercontent.com/kekyo/CenterCLR.SushiRotator/master/Images/history1.jpg)
 
-2. ["Apple says no fun allowed on the Touch Bar" (TechCrunch)](https://techcrunch.com/2016/10/27/apple-says-no-fun-allowed-on-the-touch-bar/)
+### 2. ["Apple says no fun allowed on the Touch Bar" (TechCrunch)](https://techcrunch.com/2016/10/27/apple-says-no-fun-allowed-on-the-touch-bar/)
   * "The Touch Bar is serious business. Apple’s interface guidelines warn against all kinds of fun things that developers probably started thinking about when the new MacBook Pros leaked earlier this week. No doubt some apps will find a way to be creative even under the stern eye of Apple’s party police, but it’s clearly discouraged."
 
-3. ["Just because you can play Doom on the MacBook Pro Touch Bar doesn’t mean you should"](https://techcrunch.com/2016/11/21/macbook-doom/)
+### 3. ["Just because you can play Doom on the MacBook Pro Touch Bar doesn’t mean you should"](https://techcrunch.com/2016/11/21/macbook-doom/)
 
 ![Doom in Touch Bar](https://raw.githubusercontent.com/kekyo/CenterCLR.SushiRotator/master/Images/history3.jpg)
 
-4. ["THE NEW MACBOOK HAS NO PHYSICAL ESCAPE KEY RIP VIM USERS" (David Zhou)](https://twitter.com/dz/status/790998466679934976)
+### 4. ["THE NEW MACBOOK HAS NO PHYSICAL ESCAPE KEY RIP VIM USERS" (David Zhou)](https://twitter.com/dz/status/790998466679934976)
 
 ![Exiting Vim](https://raw.githubusercontent.com/kekyo/CenterCLR.SushiRotator/master/Images/history4.jpg)
 
-5. ["Sushi rotation" (Highsnobiety)](https://twitter.com/highsnobiety/status/801387890496434176)
+### 5. ["Sushi rotation" (Highsnobiety)](https://twitter.com/highsnobiety/status/801387890496434176)
   * By @mzp
 
 ![Exiting Vim](https://raw.githubusercontent.com/kekyo/CenterCLR.SushiRotator/master/Images/history5.gif)
 
-6. ["Even Vim can 🍣 the status line" (Pocke)](https://twitter.com/p_ck_/status/799997811689275394)
+### 6. ["Even Vim can 🍣 the status line" (Pocke)](https://twitter.com/p_ck_/status/799997811689275394)
 
 ![Even Vim can 🍣 the status line](https://raw.githubusercontent.com/kekyo/CenterCLR.SushiRotator/master/Images/history6.gif)
 
-7. ["Day when sushi flows in Emacs mode-line" (Wataru MIYAGUNI)](https://twitter.com/gongoZ/status/801431366227214337)
+### 7. ["Day when sushi flows in Emacs mode-line" (Wataru MIYAGUNI)](https://twitter.com/gongoZ/status/801431366227214337)
 
 ![Day when sushi flows in Emacs mode-line](https://raw.githubusercontent.com/kekyo/CenterCLR.SushiRotator/master/Images/history7.gif)
 
-8. Just now SusuiRotator released, sushi flows in Visual Studio!!
+### 8. Just now SusuiRotator released, sushi flows in Visual Studio!!
 
 ## License
 * Source code copyright (c) 2016 Kouji Matsui
