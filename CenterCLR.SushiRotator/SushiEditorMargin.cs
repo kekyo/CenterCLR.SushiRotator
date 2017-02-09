@@ -16,96 +16,121 @@
 ////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace CenterCLR.SushiRotator
 {
-    #region SushiRotatorResources
-    // Because will be throwing InvalidCastException from internal VS declarated
-    // in SushiEditorMargin...
-    internal static class SushiRotatorResources
-    {
-        public static readonly double PixelsPerSecond = 50.0;
-        public static readonly Brush Black;
-        public static readonly Brush Yellow;
-        public static readonly BitmapSource[] Images;
-
-        static SushiRotatorResources()
-        {
-            Black = new SolidColorBrush(Colors.Black);
-            Black.Freeze();
-            Yellow = new SolidColorBrush(Colors.Yellow);
-            Yellow.Freeze();
-
-            var assembly = typeof(SushiRotatorResources).Assembly;
-            Images =
-                assembly.
-                    GetManifestResourceNames().
-                    Where(name => name.EndsWith(".png")).
-                    Select(name =>
-                    {
-                        var image =
-                            new PngBitmapDecoder(
-                                assembly.GetManifestResourceStream(name),
-                                BitmapCreateOptions.None,
-                                BitmapCacheOption.Default).
-                            Frames[0];
-                        image.Freeze();
-                        return (BitmapSource)image;
-                    }).
-                    ToArray();
-        }
-    }
-    #endregion
-
     /// <summary>
     /// Margin's canvas and visual definition including both size and content
     /// </summary>
     internal sealed class SushiEditorMargin : Canvas, IWpfTextViewMargin
     {
+        private enum ShowingStates
+        {
+            Closed,
+            Opening,
+            Opened,
+            Closing
+        }
+
         /// <summary>
         /// Margin name.
         /// </summary>
         public const string MarginName = "SushiEditorMargin";
 
+        #region Private fields.
         /// <summary>
         /// A value indicating whether the object is disposed.
         /// </summary>
         private bool isDisposed;
 
-        private readonly DispatcherTimer dispatcherTimer;
+        private readonly DispatcherTimer sushiGeneratorTimer;
+        private readonly DispatcherTimer canvasReopenTimer;
+        private DelegatedAnimation canvasHeightAnimation;
+        private ShowingStates showingState = ShowingStates.Closed;
         private readonly Random r = new Random();
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="SushiEditorMargin"/> class for a given <paramref name="textView"/>.
         /// </summary>
-        /// <param name="textView">The <see cref="IWpfTextView"/> to attach the margin to.</param>
-        public SushiEditorMargin(IWpfTextView textView)
+        /// <param name="wpfTextViewHost">The <see cref="IWpfTextViewHost"/> for which to create the <see cref="IWpfTextViewMargin"/>.</param>
+        /// <param name="marginContainer">The margin that will contain the newly-created margin.</param>
+        public SushiEditorMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
-            this.Height = 40;
+            this.Height = 0;
+            this.Visibility = Visibility.Collapsed;
             this.ClipToBounds = true;
             this.Background = SushiRotatorResources.Black;
 
-            // Setup timer.
-            dispatcherTimer =
+            var textView = wpfTextViewHost.TextView;
+            if (IsValidTextView(textView) == false)
+            {
+                // Nothing to do for text or code view (exclude output view).
+                return;
+            }
+
+            // Setup timers.
+            sushiGeneratorTimer =
                 new DispatcherTimer(
-                    TimeSpan.FromMilliseconds(100),
+                    TimeSpan.FromMilliseconds(1000),
                     DispatcherPriority.Normal,
-                    DispatcherTimer_Tick,
+                    this.SushiGeneratorTimer_Tick,
+                    this.Dispatcher);
+            canvasReopenTimer =
+                new DispatcherTimer(
+                    TimeSpan.FromMilliseconds(SushiRotatorResources.CanvasReopenDelay),
+                    DispatcherPriority.Normal,
+                    this.CanvasReopenTimer_Tick,
                     this.Dispatcher);
 
             // Hook ready timing.
-            this.Loaded +=
-                (sender, args) => dispatcherTimer.Start();
-        }
+            this.Loaded += (sender, args) =>
+            {
+                sushiGeneratorTimer.Start();
+                canvasReopenTimer.Start();
+            };
 
+            textView.GotAggregateFocus += (s, e) => this.CloseSushiBar();
+            textView.LostAggregateFocus += (s, e) => this.OpenSushiBar();
+
+            textView.ViewportWidthChanged += (s, e) => this.CloseSushiBar();
+            textView.ViewportLeftChanged += (s, e) => this.CloseSushiBar();
+            textView.ZoomLevelChanged += (s, e) => this.CloseSushiBar();
+            textView.MouseHover += (s, e) => this.CloseSushiBar();
+            textView.TextBuffer.Changed += (s, e) => this.CloseSushiBar();
+
+            textView.Caret.PositionChanged += (s, e) => this.CloseSushiBar();
+        }
+        #endregion
+
+        #region IsValidTextView
+        /// <summary>
+        /// Compute target text view.
+        /// </summary>
+        /// <param name="textView">IWpfTextView</param>
+        /// <returns>True if valid text view.</returns>
+        private static bool IsValidTextView(IWpfTextView textView)
+        {
+            return
+                // Exclude output view.
+                (textView.TextBuffer.ContentType.TypeName.IndexOf(
+                    "output", StringComparison.InvariantCultureIgnoreCase) == -1) &&
+                // Exclude subtype is not text/code.
+                textView.TextBuffer.ContentType.BaseTypes.Any(ct =>
+                    ct.TypeName.Equals("text", StringComparison.InvariantCultureIgnoreCase) ||
+                    ct.TypeName.Equals("code", StringComparison.InvariantCultureIgnoreCase));
+        }
+        #endregion
+
+        #region Generate sushi image
         /// <summary>
         /// Generate funny sushi image.
         /// </summary>
@@ -116,7 +141,7 @@ namespace CenterCLR.SushiRotator
             var image = new Image
             {
                 Source = SushiRotatorResources.Images[index],
-                Height = this.Height - 8,
+                Height = SushiRotatorResources.CanvasHeight - 8,
                 Stretch = Stretch.Uniform
             };
 
@@ -147,12 +172,25 @@ namespace CenterCLR.SushiRotator
             d.Arrange(new Rect(0, 0, d.DesiredSize.Width, d.DesiredSize.Height));
         }
 
+        protected override void OnVisualParentChanged(DependencyObject oldParent)
+        {
+            if (sushiGeneratorTimer != null)
+            {
+                // DIRTY: Schedule delay.
+                //   If view is undocks from VS window, ForceCalculate will fails traverse parents.
+                sushiGeneratorTimer.Interval = TimeSpan.FromMilliseconds(1000);
+                sushiGeneratorTimer.Start();
+            }
+
+            base.OnVisualParentChanged(oldParent);
+        }
+
         /// <summary>
-        /// Timer reached.
+        /// Timer reached (Generate sushi)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DispatcherTimer_Tick(object sender, EventArgs e)
+        private void SushiGeneratorTimer_Tick(object sender, EventArgs e)
         {
             // Generate sushi.
             var element = this.GenerateSushi();
@@ -167,34 +205,115 @@ namespace CenterCLR.SushiRotator
 
             // Create animation.
             var width = this.ActualWidth + 10;
-            var animation = new DoubleAnimation
-            {
-                From = width,
-                To = 0 - width,
-                Duration = TimeSpan.FromMilliseconds(width / SushiRotatorResources.PixelsPerSecond * 1000.0)
-            };
-
-            // Create storyboard and relate animation.
-            var storyboard = new Storyboard();
-            EventHandler completed = null;
-            completed = (o, args) =>
-            {
-                this.Children.Remove(element);
-                storyboard.Children.Remove(animation);
-                animation.Completed -= completed;
-            };
-            animation.Completed += completed;
-
-            Storyboard.SetTarget(animation, element);
-            Storyboard.SetTargetProperty(animation, new PropertyPath("(Canvas.Left)"));
-            storyboard.Children.Add(animation);
+            var sushiRotateAnimation = new DelegatedAnimation(
+                element,
+                new PropertyPath("(Canvas.Left)"),
+                width,
+                0 - width,
+                width / SushiRotatorResources.PixelsPerSecond * 1000.0);
+            sushiRotateAnimation.Completed += (s, e2) => this.Children.Remove(element);
 
             // Start animation.
-            storyboard.Begin();
+            sushiRotateAnimation.Begin();
 
             // Schedule next timeout.
-            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(delay);
+            sushiGeneratorTimer.Interval = TimeSpan.FromMilliseconds(delay);
+            sushiGeneratorTimer.Start();
         }
+        #endregion
+
+        #region Canvas close/reopen
+        /// <summary>
+        /// Abort canvas animation.
+        /// </summary>
+        /// <returns>Current canvas height.</returns>
+        private double AbortSushiBarAnimation()
+        {
+            var currentHeight = this.ActualHeight;
+            canvasHeightAnimation?.Abort();
+            return currentHeight;
+        }
+
+        /// <summary>
+        /// Close canvas.
+        /// </summary>
+        private void CloseSushiBar()
+        {
+            // Finish current animation.
+            var currentHeight = this.AbortSushiBarAnimation();
+
+            Debug.WriteLine("CloseSushiBar: Begin: " + showingState);
+
+            canvasHeightAnimation = new DelegatedAnimation(
+                this,
+                new PropertyPath("(Canvas.Height)"),
+                currentHeight,
+                0,
+                SushiRotatorResources.CanvasClosingDuration / SushiRotatorResources.CanvasHeight * currentHeight);
+
+            canvasHeightAnimation.Completed += (s, e) =>
+            {
+                Debug.WriteLine("CloseSushiBar: Finished: " + showingState);
+
+                if (showingState != ShowingStates.Closing)
+                {
+                    this.Visibility = Visibility.Collapsed;
+                }
+                showingState = ShowingStates.Closed;
+
+                // Start reopen timer.
+                canvasReopenTimer.Interval =
+                    TimeSpan.FromMilliseconds(SushiRotatorResources.CanvasReopenDelay);
+                canvasReopenTimer.Start();
+            };
+
+            // Start animation.
+            showingState = ShowingStates.Closing;
+            canvasHeightAnimation.Begin();
+        }
+
+        /// <summary>
+        /// Open canvas.
+        /// </summary>
+        private void OpenSushiBar()
+        {
+            // Finish current animation.
+            var currentHeight = this.AbortSushiBarAnimation();
+
+            Debug.WriteLine("OpenSushiBar: Begin: " + showingState);
+
+            canvasHeightAnimation = new DelegatedAnimation(
+                this,
+                new PropertyPath("(Canvas.Height)"),
+                currentHeight,
+                SushiRotatorResources.CanvasHeight,
+                SushiRotatorResources.CanvasReopenDuration / SushiRotatorResources.CanvasHeight * (SushiRotatorResources.CanvasHeight - currentHeight));
+
+            canvasHeightAnimation.Completed += (s, e) =>
+            {
+                Debug.WriteLine("OpenSushiBar: Finished: " + showingState);
+                showingState = ShowingStates.Opened;
+            };
+
+            // Start animation.
+            this.Visibility = Visibility.Visible;
+            showingState = ShowingStates.Opening;
+            canvasHeightAnimation.Begin();
+
+            // Stop reopen timer.
+            canvasReopenTimer.Stop();
+        }
+
+        /// <summary>
+        /// Timer reached (Reopen canvas)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CanvasReopenTimer_Tick(object sender, EventArgs e)
+        {
+            this.OpenSushiBar();
+        }
+        #endregion
 
         #region IWpfTextViewMargin
         /// <summary>
@@ -279,6 +398,7 @@ namespace CenterCLR.SushiRotator
         }
         #endregion
 
+        #region ThrowIfDisposed
         /// <summary>
         /// Checks and throws <see cref="ObjectDisposedException"/> if the object is disposed.
         /// </summary>
@@ -289,5 +409,6 @@ namespace CenterCLR.SushiRotator
                 throw new ObjectDisposedException(MarginName);
             }
         }
+        #endregion
     }
 }

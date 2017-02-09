@@ -64,6 +64,9 @@
   * Emoji One images provided free by Emoji One.
 
 ## History
+* 1.2.0: Sneaking sushi edition.
+  * Automatically hide sushi bar when editors are inuse.
+  * Show sushi bar only text and source code editing view panes.
 * 1.1.0:
   * Support older version VS's (2012, 2013, 2015, 2017)
 * 1.0.0:

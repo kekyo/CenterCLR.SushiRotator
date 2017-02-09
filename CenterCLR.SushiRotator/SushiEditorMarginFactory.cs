@@ -33,7 +33,6 @@ namespace CenterCLR.SushiRotator
     internal sealed class SushiEditorMarginFactory : IWpfTextViewMarginProvider
     {
         #region IWpfTextViewMarginProvider
-
         /// <summary>
         /// Creates an <see cref="IWpfTextViewMargin"/> for the given <see cref="IWpfTextViewHost"/>.
         /// </summary>
@@ -44,9 +43,8 @@ namespace CenterCLR.SushiRotator
         /// </returns>
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
-            return new SushiEditorMargin(wpfTextViewHost.TextView);
+            return new SushiEditorMargin(wpfTextViewHost, marginContainer);
         }
-
         #endregion
     }
 }
